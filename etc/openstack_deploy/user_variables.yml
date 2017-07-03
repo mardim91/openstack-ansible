@@ -21,6 +21,12 @@
 ## Debug and Verbose options.
 debug: false
 
+openstack_host_specific_kernel_modules:
+  - name: "openvswitch"
+    pattern: "CONFIG_OPENVSWITCH="
+    group: "network_hosts"
+neutron_plugin_type: ml2.ovs
+ovs_nsh_support: true
 ## Common Glance Overrides
 # Set glance_default_store to "swift" if using Cloud Files backend
 # or "rbd" if using ceph backend; the latter will trigger ceph to get
