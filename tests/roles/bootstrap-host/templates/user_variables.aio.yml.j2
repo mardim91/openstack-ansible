@@ -18,10 +18,10 @@ debug: True
 
 ##OVS-NSH Section
 
-openstack_host_specific_kernel_modules:
-  - name: "openvswitch"
-    pattern: "CONFIG_OPENVSWITCH="
-    group: "network_hosts"
+#openstack_host_specific_kernel_modules:
+# - name: "openvswitch"
+#    pattern: "CONFIG_OPENVSWITCH="
+#    group: "network_hosts"
 neutron_plugin_type: ml2.ovs
 ovs_nsh_support: true
 
