@@ -16,6 +16,15 @@
 ## General options
 debug: True
 
+##OVS-NSH Section
+
+openstack_host_specific_kernel_modules:
+  - name: "openvswitch"
+    pattern: "CONFIG_OPENVSWITCH="
+    group: "network_hosts"
+neutron_plugin_type: ml2.ovs
+ovs_nsh_support: true
+
 ## Tempest settings
 tempest_public_subnet_cidr: 172.29.248.0/22
 tempest_public_subnet_allocation_pools: "172.29.249.110-172.29.249.200"
