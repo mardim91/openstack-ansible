@@ -30,9 +30,6 @@ export DEBIAN_FRONTEND=${DEBIAN_FRONTEND:-"noninteractive"}
 # Set the role fetch mode to any option [galaxy, git-clone]
 export ANSIBLE_ROLE_FETCH_MODE=${ANSIBLE_ROLE_FETCH_MODE:-git-clone}
 
-# virtualenv vars
-VIRTUALENV_OPTIONS="--always-copy"
-
 # This script should be executed from the root directory of the cloned repo
 cd "$(dirname "${0}")/.."
 
@@ -65,24 +62,16 @@ case ${DISTRO_ID} in
           python-pyasn1 pyOpenSSL python-ndg_httpsclient \
           python-netaddr python-prettytable python-crypto PyYAML \
           python-virtualenv
-          VIRTUALENV_OPTIONS=""
         ;;
     ubuntu)
         apt-get update
         DEBIAN_FRONTEND=noninteractive apt-get -y install \
-          git python-all python-dev curl python2.7-dev build-essential \
-          libssl-dev libffi-dev netcat python-requests python-openssl python-pyasn1 \
-          python-netaddr python-prettytable python-crypto python-yaml \
-          python-virtualenv
+          git python3-all python3-dev curl python3.5-dev build-essential \
+          libssl-dev libffi-dev netcat python3-requests python3-openssl python3-pyasn1 \
+          python3-netaddr python3-prettytable python3-crypto python3-yaml \
+          python3-virtualenv python3-venv
         ;;
 esac
-
-# NOTE(mhayden): Ubuntu 16.04 needs python-ndg-httpsclient for SSL SNI support.
-#                This package is not needed in Ubuntu 14.04 and isn't available
-#                there as a package.
-if [[ "${DISTRO_ID}" == 'ubuntu' ]] && [[ "${DISTRO_VERSION_ID}" == '16.04' ]]; then
-  DEBIAN_FRONTEND=noninteractive apt-get -y install python-ndg-httpsclient
-fi
 
 # Install pip
 get_pip
@@ -96,7 +85,7 @@ elif [ -n "$HTTP_PROXY" ]; then
 fi
 
 # Figure out the version of python is being used
-PYTHON_EXEC_PATH="$(which python2 || which python)"
+PYTHON_EXEC_PATH="$(which python3 || which python2 || which python)"
 PYTHON_VERSION="$($PYTHON_EXEC_PATH -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')"
 
 # Use https when Python with native SNI support is available
@@ -105,8 +94,28 @@ UPPER_CONSTRAINTS_PROTO=$([ "$PYTHON_VERSION" == $(echo -e "$PYTHON_VERSION\n2.7
 # Set the location of the constraints to use for all pip installations
 export UPPER_CONSTRAINTS_FILE=${UPPER_CONSTRAINTS_FILE:-"$UPPER_CONSTRAINTS_PROTO://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?id=$(awk '/requirements_git_install_branch:/ {print $2}' playbooks/defaults/repo_packages/openstack_services.yml)"}
 
+# Figure out the right virtualenv command and options
+if [[ ${PYTHON_VERSION} =~ ^3 ]]; then
+  VIRTUALENV_COMMAND="python3 -m venv"
+  VIRTUALENV_OPTIONS="--copies"
+else
+  VIRTUALENV_COMMAND="virtualenv --python=${PYTHON_EXEC_PATH}"
+  VIRTUALENV_OPTIONS="--always-copy"
+fi
+
+# Trying to use the copy option on CentOS fails miserably, so we override it.
+if [[ "${DISTRO_ID}" == "centos" ]] || [[ "${DISTRO_ID}" == "rhel" ]]; then
+  VIRTUALENV_OPTIONS=""
+fi
+
 # Create a Virtualenv for the Ansible runtime
-virtualenv --clear ${VIRTUALENV_OPTIONS} --python="${PYTHON_EXEC_PATH}" /opt/ansible-runtime
+if [ -f "/opt/ansible-runtime/bin/python" ]; then
+  VENV_PYTHON_VERSION="$(/opt/ansible-runtime/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')"
+  if [ "$PYTHON_VERSION" != "$VENV_PYTHON_VERSION" ]; then
+    rm -rf /opt/ansible-runtime
+  fi
+fi
+${VIRTUALENV_COMMAND} --clear ${VIRTUALENV_OPTIONS} /opt/ansible-runtime
 
 # The vars used to prepare the Ansible runtime venv
 PIP_OPTS+=" --upgrade"
