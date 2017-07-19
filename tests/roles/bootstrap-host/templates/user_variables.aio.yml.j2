@@ -16,6 +16,23 @@
 ## General options
 debug: True
 
+##OVS-NSH Section
+
+#openstack_host_specific_kernel_modules:
+# - name: "openvswitch"
+#    pattern: "CONFIG_OPENVSWITCH="
+#    group: "network_hosts"
+neutron_plugin_type: ml2.ovs
+ovs_nsh_support: true
+
+#neutron_ml2_drivers_type: "flat,vlan"
+
+#neutron_provider_networks:
+#  network_flat_networks: "*"
+#  network_types: "vlan"
+#  network_vlan_ranges: "physnet1:102:199"
+#  network_mappings: "physnet1:br-provider"
+
 ## Tempest settings
 tempest_public_subnet_cidr: 172.29.248.0/22
 tempest_public_subnet_allocation_pools: "172.29.249.110-172.29.249.200"
@@ -101,3 +118,9 @@ tempest_run: yes
 # Disable chronyd in OpenStack CI
 security_rhel7_enable_chrony: no
 {% endif %}
+
+# For testing purposes in public clouds, we need to ignore these
+# services when trying to do a reload of nova services.
+nova_service_negate:
+  - "nova-agent.service"
+  - "nova-resetnetwork.service"
