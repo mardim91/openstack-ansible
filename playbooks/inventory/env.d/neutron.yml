@@ -47,7 +47,9 @@ component_skel:
   neutron_server:
     belongs_to:
       - neutron_all
-
+  openvswitch_nsh:
+    belongs_to:
+      - neutron_all
 
 container_skel:
   neutron_agents_container:
@@ -59,6 +61,7 @@ container_skel:
       - neutron_metering_agent
       - neutron_linuxbridge_agent
       - neutron_openvswitch_agent
+      - openvswitch_nsh
       - neutron_l3_agent
       - neutron_dhcp_agent
       - neutron_lbaas_agent
@@ -68,6 +71,13 @@ container_skel:
       - network_containers
     contains:
       - neutron_server
+  neutron_networking_container:
+    belongs_to:
+      - network_containers
+    contains:
+      - openvswitch_nsh
+    properties:
+      is_metal: true 
 
 
 physical_skel:
