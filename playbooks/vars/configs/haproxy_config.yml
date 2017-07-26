@@ -273,3 +273,12 @@ haproxy_default_services:
         - "forwardfor"
         - "httpchk /versions"
         - "httplog"
+  - service:
+      haproxy_service_name: tacker
+      haproxy_backend_nodes: "{{ groups['tacker_all'] | default([]) }}"
+      haproxy_port: 8888
+      haproxy_balance_type: http
+      haproxy_backend_options:
+        - "forwardfor"
+        - "httpchk"
+        - "httplog"

@@ -35,6 +35,7 @@
         - name: neutron.yml.aio
         - name: nova.yml.aio
         - name: swift.yml.aio
+        - name: tacker.yml.aio
       ceph:
         - name: ceph.yml.aio
         - name: cinder.yml.aio

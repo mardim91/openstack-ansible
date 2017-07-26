@@ -186,3 +186,7 @@
   scm: git
   src: https://github.com/ceph/ansible-ceph-osd
   version: v2.2.4
+- name: os_tacker
+  scm: git
+  src: git://git.openstack.org/openstack/openstack-ansible-os_tacker
+  version: master
