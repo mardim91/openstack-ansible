@@ -473,3 +473,14 @@ magnum_service_internaluri_proto: "{{ openstack_service_internaluri_proto | defa
 magnum_service_internalurl: "{{ magnum_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ magnum_bind_port }}"
 magnum_service_adminuri_proto: "{{ openstack_service_adminuri_proto | default(magnum_service_proto) }}"
 magnum_service_adminurl: "{{ magnum_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ magnum_bind_port }}"
+
+# Tacker
+tacker_service_user_name: tacker 
+tacker_service_tenant_name: service
+
+tacker_rabbitmq_userid: tacker
+tacker_rabbitmq_vhost: /tacker
+tacker_rabbitmq_port: "{{ rabbitmq_port }}"
+tacker_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
+tacker_rabbitmq_servers: "{{ rabbitmq_servers }}"
+tacker_rabbitmq_host_group: "{{ rabbitmq_host_group }}"

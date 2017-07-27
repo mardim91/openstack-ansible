@@ -36,6 +36,14 @@
         log_dirs:
           - src: "/openstack/log/{{ inventory_hostname }}-tacker"
             dest: "/var/log/tacker"
+    - include: common-tasks/mysql-db-user.yml
+      static: no
+      vars:
+        user_name: "{{ tacker_galera_user }}"
+        password: "{{ tacker_container_mysql_password }}"
+        login_host: "{{ tacker_galera_address }}"
+        db_name: "{{ tacker_galera_database }}"
+      when: inventory_hostname == groups['tacker_all'][0]
     - include: common-tasks/package-cache-proxy.yml
   roles:
     - role: "os_tacker"
